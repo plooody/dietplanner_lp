@@ -36,7 +36,22 @@ nutrient_requirements = {
 # Define maximum values for specific foods (in grams)
 max_values = {
     'Apple': 200,    # Example: Maximum 200 grams of apples allowed
-    'Banana': 150,   # Example: Maximum 150 grams of bananas allowed
+    'Spinach': 150,   # Example: Maximum 150 grams of bananas allowed
+    'Carrot': 150,
+    'Egg': 200,
+    'Milk':400,
+    'Tomato':200,
+    'Banana':300,
+    'Guava':0,
+    'Guava (Pink)':0,
+    'Yogurt':300,
+    'Lettuce':200,
+    'Potato':300,
+    'Oranges':200,
+    'Papaya':0,
+    'Strawberries':300,
+    'Cantaloupe':300,
+
 }
 
 # Create a linear programming problem
@@ -54,15 +69,18 @@ for nutrient, requirement in nutrient_requirements.items():
     if requirement is not None:
         prob += pulp.lpSum([food_data.at[i, nutrient] * food_vars[i] for i in food_data.index]) >= requirement, nutrient
 
-# # Add constraints to limit the quantity of specific foods
-# for food, max_quantity in max_values.items():
-#     if max_quantity is not None:
-#         prob += pulp.lpSum([food_data.at[i, nutrient] * food_vars[i] for i in food_data.index]) <= max_quantity, food
-    #index = food_data[food_data['Grocery'] == food].index[0]
-    #prob += food_vars[index] <= max_quantity, f"Max_{food}"
 
+for food, max_quantity in max_values.items():    
+    if food in food_data['Grocery'].values:
+        index = food_data[food_data['Grocery'] == food].index[0]
+        prob += food_vars[index] <= max_quantity/100, f"Max_{food}"
+    else:
+        print(f"Warning: {food} not found in the food data. Skipping this constraint.")
+
+print(prob)
 # Solve the linear programming problem
 prob.solve()
+print("00000000000000")
 
 # Print the status of the optimization
 print("Status:", pulp.LpStatus[prob.status])
